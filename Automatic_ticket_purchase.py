@@ -1,19 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import os
-import re
 import time
 import pickle
-from tkinter import *
 from time import sleep
 from selenium import webdriver
-
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.action_chains import ActionChains
 
 
 #大麦网主页
@@ -21,9 +12,10 @@ damai_url="https://www.damai.cn/"
 #登录页
 login_url="https://passport.damai.cn/login?ru=https%3A%2F%2Fwww.damai.cn%2F"
 #抢票目标页
-# target_url="https://detail.damai.cn/item.htm?spm=a2oeg.search_category.0.0.71254d153q9EDX&id=590449968855&clicktitle=%E7%9B%B4%E5%88%B0%E4%B8%96%E7%95%8C%E5%B0%BD%E5%A4%B4-8090%E7%BB%8F%E5%85%B8%E5%8A%A8%E6%BC%AB%E6%BC%94%E5%94%B1%E4%BC%9A%E4%B8%8A%E6%B5%B7%E7%AB%99"
-#选座类型页面
-target_url="https://detail.damai.cn/item.htm?spm=a2oeg.search_category.0.0.12184d158syK1V&id=594491989335&clicktitle=2019%E5%92%AA%E5%92%95%E9%9F%B3%E4%B9%90%E7%8E%B0%E5%9C%BA%E4%B8%81%E5%BD%93%E2%80%9C%E7%88%B1%E5%88%B0%E4%B8%8D%E8%A6%81%E5%91%BD%E2%80%9D%E5%B7%A1%E5%9B%9E%E6%BC%94%E5%94%B1%E4%BC%9A%20%E4%B8%8A%E6%B5%B7%E7%AB%99"
+target_url="https://detail.damai.cn/item.htm?spm=a2oeg.search_category.0.0.592428dfAVADSo&id=598610277762&clicktitle=%E5%91%A8%E6%9D%B0%E4%BC%A62019%E5%85%A8%E6%96%B0%E4%B8%96%E7%95%8C%E5%B7%A1%E5%9B%9E%E6%BC%94%E5%94%B1%E4%BC%9A%E2%80%94%E5%8D%97%E4%BA%AC%E7%AB%99"
+
+# target_url="https://detail.damai.cn/item.htm?spm=a2oeg.search_category.0.0.17d24d15CjZAB1&id=597705805772&clicktitle=2019%E7%88%B1%E5%A5%87%E8%89%BA%E5%B0%96%E5%8F%AB%E4%B9%8B%E5%A4%9C%E6%BC%94%E5%94%B1%E4%BC%9A%E5%8C%97%E4%BA%AC%E7%AB%99"
+
 
 name = "Your_Name"
 phone = "Your_PhoneNumber"
@@ -40,7 +32,7 @@ class Concert(object):
        while self.driver.title.find('大麦网-全球演出赛事官方购票平台')!=-1:
            sleep(1)
        print("###请扫码登录###")
-       while self.driver.title=='中文登录':
+       while self.driver.title=='大麦登录':
            sleep(1)
        print("###扫码成功###")
        pickle.dump(self.driver.get_cookies(), open("cookies.pkl", "wb")) 
@@ -94,9 +86,16 @@ class Concert(object):
             print("="*30)
             print("###开始进行日期及票价选择###")
             while self.driver.title.find('确认订单') == -1:           #如果跳转到了订单结算界面就算这步成功了，否则继续执行此步
-                
-                # self.driver.find_elements_by_xpath('//html//body//div[@class = "perform__order__price"]//div[2]//div//div//a[2]')[0].click()   #购票数+1(若需要)
-                # self.driver.find_elements_by_xpath('//div[@class = "perform__order__select perform__order__select__performs"]//div[2]//div//div[x]')[0].click()   #默认购票日期的选择,x为日期的选择，1，2，3....
+                try:
+                    self.driver.find_elements_by_xpath('//html//body//div[@class = "perform__order__price"]//div[2]//div//div//a[2]')[0].click()   #购票数+1(若需要)
+                except:
+                    print("购票数添加失败")
+
+                # try:
+                    # self.driver.find_elements_by_xpath('//div[@class = "perform__order__select perform__order__select__performs"]//div[2]//div//div[x]')[0].click()   #默认购票日期的选择,x为日期的选择，1，2，3....
+                # except:
+                    # print("日期选择失败")
+
                 cart = self.driver.find_element_by_class_name('perform')   #获得选票界面的表单值
 
                 # try:各种按钮的点击,
@@ -104,7 +103,7 @@ class Concert(object):
                 try:
                     buybutton = self.driver.find_element_by_class_name('buybtn').text
                     if buybutton == "即将开抢":
-                        self.status=2
+                        self.status = 2
                         self.driver.get(target_url)
                         print('###抢票未开始，刷新等待开始###')
                         continue
@@ -128,7 +127,7 @@ class Concert(object):
 
                 except:
                     print('###未跳转到订单结算界面###')
-                
+
                 title = self.driver.title
                 if title =="确认订单" :                                    
                     self.check_order()
@@ -150,7 +149,7 @@ class Concert(object):
             print('###默认购票人信息###')
             try:
                 #姓名和电话的填写，这是绝对路径，由于大麦网目标页会更新，出现问题修改xpath即可
-
+                time.sleep(0.5)
                 self.driver.find_elements_by_xpath('//div[@class = "w1200"]//div[@class = "delivery-form"]//div[1]//div[2]//span//input')[0].send_keys(name)
                 time.sleep(0.5)
                 self.driver.find_elements_by_xpath('//div[@class = "w1200"]//div[@class = "delivery-form"]//div[2]//div[2]//span[2]//input')[0].send_keys(phone)
@@ -159,10 +158,12 @@ class Concert(object):
                 print("###填写确认订单信息时，联系人手机号填写失败###")
                 print(e)
             try:
+                time.sleep(0.5)
                 #默认选第一个购票人信息
-                self.driver.find_elements_by_xpath('//div[@class = "w1200"]//div[@class = "ticket-buyer-select"]//div//div[1]//span//input')[0].click()  #观影人1
+                self.driver.find_elements_by_xpath('//div[@class = "w1200"]//div[@class = "ticket-buyer-select"]//div//div[1]//span')[0].click()  #观影人1
                 #选第二个购票人信息(若购买多张票时需要开启此选项，增加购票人信息)
-                # self.driver.find_elements_by_xpath('//div[@class = "w1200"]//div[@class = "ticket-buyer-select"]//div//div[2]//span//input')[0].click()  #观影人2
+                time.sleep(0.5)
+                self.driver.find_elements_by_xpath('//div[@class = "w1200"]//div[@class = "ticket-buyer-select"]//div//div[2]//span')[0].click()  #观影人2
            
             except Exception as e:
                 print("###购票人信息选中失败，自行查看元素位置###")
@@ -174,7 +175,7 @@ class Concert(object):
             # 最后一步提交订单
 
             time.sleep(1)       # 太快会影响加载，导致按钮点击无效
-            self.driver.find_elements_by_xpath('//div[@class = "w1200"]//div[2]//div//div[9]//button[1]')[0].click()
+            # self.driver.find_elements_by_xpath('//div[@class = "w1200"]//div[2]//div//div[9]//button[1]')[0].click()
 
             # try:
             #     element = WebDriverWait(self.driver, 5).until(EC.title_contains('支付宝 - 网上支付 安全快速！'))
