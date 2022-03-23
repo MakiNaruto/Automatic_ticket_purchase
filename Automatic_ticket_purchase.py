@@ -49,7 +49,7 @@ class DaMaiTicket:
             print(e)
 
     def check_login_status(self):
-        """ 检测是否成功登录 """
+        """ 检测是否登录成功 """
 
         headers = {
             'authority': 'passport.damai.cn',
@@ -332,4 +332,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
     a = DaMaiTicket()
     a.run()
-
