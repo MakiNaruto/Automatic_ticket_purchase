@@ -5,6 +5,8 @@
 之前的版本通过按钮操作，还要等待页面元素加载，效率低下。
 此版本仅需登录时用到页面，通过selenium打开页面进行登录。其余操作均通过requests进行请求。
 
+ps: 暂不支持选座购买。
+
 其流程图如下:
 
 <img src="https://github.com/MakiNaruto/Automatic_ticket_purchase/blob/master/images/flow_chart.jpeg" width="50%" height="50%" />
