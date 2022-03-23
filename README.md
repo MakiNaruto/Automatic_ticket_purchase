@@ -6,7 +6,9 @@
 此版本仅需登录时用到页面，通过selenium打开页面进行登录。其余操作均通过requests进行请求。
 
 其流程图如下:
+
 <img src="https://github.com/MakiNaruto/Automatic_ticket_purchase/blob/master/images/flow_chart.jpeg" width="50%" height="50%" />
+
 ## 准备工作
 ### 1. 配置环境
 
