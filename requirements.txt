@@ -1,3 +1,4 @@
 beautifulsoup4==4.9.3
 requests==2.24.0
 selenium==3.141.0
+pyexecjs==1.5.1
