@@ -13,7 +13,7 @@ ps: 暂不支持选座购买。
 
 其流程图如下:
 
-![image](images/flow_chart.jpeg)
+<img src="https://github.com/MakiNaruto/Automatic_ticket_purchase/blob/master/images/flow_chart.jpeg" width="50%" height="50%" />
 
 ## 准备工作
 ### 1. 配置环境
