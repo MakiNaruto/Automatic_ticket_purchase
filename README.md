@@ -13,7 +13,7 @@ ps: 暂不支持选座购买。
 
 其流程图如下:
 
-<img src="https://github.com/MakiNaruto/Automatic_ticket_purchase/blob/master/images/flow_chart.jpeg" width="50%" height="50%" />
+![image](images/flow_chart.jpeg)
 
 ## 准备工作
 ### 1. 配置环境
@@ -56,6 +56,9 @@ def __init__(self):
     self.buy_nums: int = 1                  # 购买影票数量, 需与观影人数量一致
     self.ticket_price: int = 180            # 购买指定票价
 ```
+  - 观影人（观影人名称必须在大麦网中已添加，并名称一致）
+![image](images/viewer.png)
+  - 商品id<br>
 ![image](images/item_id.png)
 
 2.2 运行
@@ -67,3 +70,4 @@ python Automatic_ticket_purchase.py
 # 指定其他方式登录
 python Automatic_ticket_purchase.py --mode qr
 ```
+
