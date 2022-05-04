@@ -20,13 +20,13 @@ class DaMaiTicket:
         # 登录信息
         self.login_cookies = {}
         self.session = session()
-        self.login_id: str = 'account'          # 大麦网登录账户名
-        self.login_password: str = 'password'   # 大麦网登录密码
+        self.login_id: str = 'account'  # 大麦网登录账户名
+        self.login_password: str = 'password'  # 大麦网登录密码
         # 以下为抢票必须的参数
-        self.item_id: int = 610820299671        # 商品id
-        self.viewer: list = ['viewer1']         # 在大麦网已填写的观影人
-        self.buy_nums: int = 1                  # 购买影票数量, 需与观影人数量一致
-        self.ticket_price: int = 180            # 购买指定票价
+        self.item_id: int = 610820299671  # 商品id
+        self.viewer: list = ['viewer1']  # 在大麦网已填写的观影人
+        self.buy_nums: int = 1  # 购买影票数量, 需与观影人数量一致
+        self.ticket_price: int = 180  # 购买指定票价
 
     def step1_get_order_info(self, item_id, commodity_param, ticket_price=None):
         """
@@ -146,7 +146,8 @@ class DaMaiTicket:
             'spm': 'a2oeg.selectseat.bottom.dbuy',
         }
 
-        response = requests.get('https://buy.damai.cn/orderConfirm', params=params, cookies=self.login_cookies, headers=headers)
+        response = requests.get('https://buy.damai.cn/orderConfirm', params=params, cookies=self.login_cookies,
+                                headers=headers)
         if response.status_code == 200:
             result = re.search('window.__INIT_DATA__[\s\S]*?};', response.text)
             self.login_cookies.update(self.session.cookies)
@@ -190,9 +191,9 @@ class DaMaiTicket:
             ('submitref', 'undefined'),
         )
         dm_viewer_pc = str([k for k, v in submit_order_info.get('data').items()])
-        dm_viewer_pc_id = re.search('dmViewerPC_[0-9]*', dm_viewer_pc).group()
-        if dm_viewer_pc_id:
-
+        dm_viewer_pc_id_search = re.search('dmViewerPC_[0-9]*', dm_viewer_pc)
+        if dm_viewer_pc_id_search:
+            dm_viewer_pc_id = dm_viewer_pc_id_search.group()  # 获取到观演人的 key
             user_list = submit_order_info['data'][dm_viewer_pc_id]['fields']['dmViewerList']
             all_available_user = [name.get('viewerName') for name in user_list]
             if len(set(viewer).intersection(set(all_available_user))) != len(viewer):
@@ -211,6 +212,8 @@ class DaMaiTicket:
                     if user.get('viewerName') in viewer:
                         user['seatId'] = seat_info[seat_index]
                         seat_index += 1
+        else:
+            print("该场次不需要指定观演人")
 
         submit_order_info = json.dumps(submit_order_info)
         response = self.session.post('https://buy.damai.cn/multi/trans/createOrder',
@@ -265,7 +268,8 @@ class DaMaiTicket:
             elif ticket_sku_status == '选座购买':
                 # 获取选座购买必备的数据信息。
                 city_id, project_id, item_id, perform_id = tools.get_select_seat_params(self.item_id)
-                stand_id, seat_price_list = tools.get_seat_dynamic_info(self.login_cookies, project_id, item_id, perform_id)
+                stand_id, seat_price_list = tools.get_seat_dynamic_info(self.login_cookies, project_id, item_id,
+                                                                        perform_id)
                 api_address = tools.get_select_seat_api(self.login_cookies, perform_id, city_id)
                 buy_serial_number = '{}_{}_{}'.format(self.item_id, self.buy_nums, sku_id)
                 api_address += str(stand_id) + '.json'
@@ -275,7 +279,8 @@ class DaMaiTicket:
                 # 获取全部的座位信息
                 all_seats_info = json.loads(response.text)
                 # 获取可售的座位信息
-                valuable_info = tools.get_valuable_seat_id(self.login_cookies, project_id, perform_id, city_id, stand_id)
+                valuable_info = tools.get_valuable_seat_id(self.login_cookies, project_id, perform_id, city_id,
+                                                           stand_id)
                 # 获取 指定抢票价格的 sku_id, price_id
                 sku_id, price_id = None, None
                 for sku_info in seat_price_list:
@@ -295,7 +300,8 @@ class DaMaiTicket:
                 valuable_seat = tools.format_valuable_seatid(all_seats_info, valuable_info, price_id)
                 # 挑选座位
                 seat_info = tools.pick_seat(valuable_seat, stand_id, self.buy_nums)
-                submit_order_info = self.step2_click_confirm_select_seats(project_id, perform_id, seat_info, buy_serial_number)
+                submit_order_info = self.step2_click_confirm_select_seats(project_id, perform_id, seat_info,
+                                                                          buy_serial_number)
                 break
         if not buy_serial_number or not submit_order_info:
             print('-' * 10, '获取购票所需信息失败', '-' * 10)
