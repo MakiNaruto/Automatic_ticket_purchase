@@ -1,3 +1,6 @@
+# 已停止维护
+大部分购买方式已迁移至手机端，需配合抓包处理。暂无更新计划。
+
 # 大麦抢票脚本 V2.1
 更新
 - 增加选座购买，暂时只支持抢购指定价格下的座位，且暂不支持连坐购买。
@@ -13,7 +16,7 @@ ps: 暂不支持选座购买。
 
 其流程图如下:
 
-<img src="https://github.com/MakiNaruto/Automatic_ticket_purchase/blob/master/images/flow_chart.jpeg" width="50%" height="50%" />
+<img src="images/flow_chart.jpeg" width="50%" height="50%" />
 
 ## 准备工作
 ### 1. 配置环境
